@@ -1,0 +1,143 @@
+#Jarvis_March
+/*202035501 Kang Seung Min
+* Clean Campus Using Jarvis March Algorithm.
+*/
+#include<stdio.h>
+#include<math.h>
+
+#define MAX 100
+//Point
+struct Point {
+	int x;
+	int y;
+};
+struct Point p[MAX];
+
+//stack
+int stack[MAX]; //stack has point as Convex hull
+int top = -1;
+
+void sort();
+void JarvisMarch();
+void Convex();
+
+int CCW();
+float euclidean();
+float Area();
+
+void sort(int n) { //정렬 없음, 가장 작은 것만 찾는다. 
+	int min_x = 0, min_y = 0;
+	int min_index = 0;
+
+	int temp_x, temp_y;
+	//sort
+	for (int i = 1; i < n; i++) { //first spot is temp(x,y) index.
+		if (min_x > p[i].x || (p[i].x == min_x) && min_y > p[i].y) {
+			min_x = p[i].x;
+			min_y = p[i].y;
+			min_index = i;
+		}
+	}
+	//시작점은 p[0]
+	temp_x = p[0].x;
+	temp_y = p[0].y;
+	p[0].x = min_x;
+	p[0].y = min_y;
+	p[min_index].x = temp_x;
+	p[min_index].y = temp_y;
+
+	/*
+	for (int i = 1; i < n; i++) { //반시계방향으로 정렬.
+		for (int j = i + 1; j < n; j++) {
+			if (p[i].x < p[j].x || (p[i].x == p[j].x) && (p[i].y > p[j].y)) {
+				temp_x = p[i].x;
+				temp_y = p[i].y;
+
+				p[i].x = p[j].x;
+				p[i].y = p[j].y;
+				p[j].x = temp_x;
+				p[j].y = temp_y;
+			}
+		}
+	}*/
+	//Defensive code.
+	for (int i = 0; i < n; i++) {
+		printf("%d %d\n", p[i].x, p[i].y);
+	}
+}
+
+void JarvisMarch(int n) {
+	stack[++top] = 0; // 시작점을 스택에 추가
+
+	// Find the next point in the convex hull
+	int p = 0;
+	do {
+		int q = (p + 1) % n;
+		for (int i = 0; i < n; i++) {
+			int o = CCW(p, i, q);
+			if (o == 1) { //Convex hull을 만족하는 조건. 
+				q = i;
+			}
+		}
+		p = q;
+		stack[++top] = p; // 다음 점을 스택에 추가
+	} while (p != 0); // 시작점으로 돌아올 때까지 반복
+
+	for (int i = 0; i <top; i++) {
+		printf("%d\n", stack[i]);
+	}
+}
+int CCW(int a, int b, int c) {
+	int result = (p[b].x - p[a].x) * (p[c].y - p[a].y) - (p[c].x - p[a].x) * (p[b].y - p[a].y);
+	if (result > 0) {
+		return 1;
+	}
+	else if (result == 0) {
+		return 0;
+	}
+	else if (result < 0) {
+		return -1;
+	}
+}
+
+void Convex(int n) {
+	JarvisMarch(n);
+}
+float euclidean(int a, int b) {
+	float dx, dy;
+	
+	dx = p[stack[a]].x - p[stack[b]].x;
+	dy = p[stack[a]].y - p[stack[b]].y;
+
+	printf("x : %0.2f y : %0.2f\n", dx, dy);
+	return sqrt(dx * dx + dy * dy);
+}
+float Area() { //길이는 구하는 것.
+	float d = 0.0;
+	for (int i = 0; i <= top; i++) {
+		d += euclidean(i, i + 1);
+	}
+
+	float r = euclidean(0, 0);
+	return (2 * r + d);
+}
+
+int main() {
+	int N;
+	printf("Enter the number of coordinates: ");
+	scanf_s("%d", &N);
+
+	for (int i = 0; i < N; i++) {
+		printf("Enter the coordinates of point %d (x y): ", i + 1);
+		scanf_s("%d %d", &p[i].x, &p[i].y);
+		getchar();  // Consume the newline character
+	}
+	sort(N);
+	Convex(N);
+	float sum = Area();
+	float dx = p[stack[0]].x - 0;
+	float dy = p[stack[0]].y - 0;
+	sum+= 2*sqrt(dx * dx + dy * dy);
+	printf("Area is %0.2f\n", sum);
+	return 0;
+}
