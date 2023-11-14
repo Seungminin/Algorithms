@@ -1,0 +1,105 @@
+/*202035501 Kang Seung Min
+* Using divide and conquer Algorithm.
+*/
+#include<stdio.h>
+#include<math.h>
+
+#define MAX 30
+#define MAX_INT 1000
+struct Point {
+	int x;
+	int y;
+};
+struct Point p[MAX];
+
+float min(float a, float b, float c) {
+	float min_num = a;
+	if (min_num > b) {
+		min_num = b;
+		if (min_num > c)
+			min_num = c;
+	}
+	else {
+		if (min_num > c)
+			min_num = c;
+	}
+
+	return min_num;
+}
+
+float euclidean(int a, int b) {
+	int dx = p[a].x - p[b].x;
+	int dy = p[a].y - p[b].y;
+	printf("%d 와 %d 사이에서 거리 구하는 과정 dx = %d, dy = %d\n", p[a].x, p[b].x, dx, dy);
+	return sqrt((float)(dx * dx + dy * dy));
+}
+float Closest_Pair(int n, int p, int q) {//p is min_index,q is max_index
+	float d;
+	if (n == 2) {
+		d = euclidean(p, q);
+	}
+	else if (n == 1) {
+		d = MAX_INT; //자기 자신을 가장 큰 것으로 만든다.
+	}
+	else {
+		int m = (q - p + 1) / 2;
+		float d1 = Closest_Pair(m, p, m - 1);
+		printf("d1 : %0.2f\n", d1);
+		float d2 = Closest_Pair(n - (m + 1), m + 1, q);
+		printf("d2 : %0.2f\n", d2);
+		float d3 = euclidean(m - 1, m);
+		float d4 = euclidean(m, m + 1);
+		printf("d3 : %0.2f, d4 : %0.2f\n", d3, d4);
+		if (d3 > d4) {
+			d = min(d1, d2, d4);
+		}
+		else {
+			d = min(d1, d2, d3);
+		}
+	}
+	return d;
+}
+
+void sort(int n) {
+	printf("Sort Part\n");
+	//x를 기준으로 작은 값부터 sort.
+	int t_x, t_y;
+	//Sort Using ascending for X.
+	for (int i = 0; i < n - 1; i++) {
+		for (int j = i + 1; j < n; j++) {
+			if (p[i].x > p[j].x) { //x값이 더 작은 거를 앞으로 분류, 만약에 x값이 같다면 그대로 유지.
+				t_x = p[i].x;
+				t_y = p[i].y;
+				p[i].x = p[j].x;
+				p[i].y = p[j].y;
+				p[j].x = t_x;
+				p[j].y = t_y;
+			}
+		}
+	}
+}
+int main() {
+	int N;
+	int num = 0;
+	while (1) {
+		scanf_s("%d", &N);
+		if (N == 0) {
+			break;
+		}
+		else {
+			num = N;
+			for (int i = 0; i < N; i++) {
+				scanf_s("%d %d", &p[i].x, &p[i].y);
+			}
+		}
+	}
+	sort(num);
+	//defensive code.
+	for (int i = 0; i < num; i++) {
+		printf("%d %d\n", p[i].x, p[i].y);
+	}
+	printf("\n");
+	float min_d = Closest_Pair(num, 0, num - 1);
+	printf("The smallest distance : %0.2f", min_d);
+	return 0;
+}
