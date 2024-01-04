@@ -23,9 +23,10 @@ for i in range(N):
 print("The small cost : ",Min_f(N)) '''
 
 #DP Version 합한 결과를 가지고 내려온다. 
+#DP에서는 minimal한 결과값들을 list, 배열에 저장을 하여 memorization을 한다.
 import sys
 n = int(sys.stdin.readline())
-colors = []
+colors = [] #list를 선언하여 이차원 배열로도 사용할 수 있다.   
 d = []
 
 for i in range (n):
