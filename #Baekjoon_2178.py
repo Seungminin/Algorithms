@@ -47,5 +47,4 @@ for i in range(row):
     row_data = list(map(int, input().split()))
     G.append(row_data)
 
-if Find_count(0, 0):
-    #print("Find minimum count")
+Find_count(0, 0)
