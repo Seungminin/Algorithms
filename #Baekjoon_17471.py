@@ -91,13 +91,15 @@ def is_connected(graph, nodes, group):
     return True
 
 def divide_areas(graph, population):
-    min_difference = float('inf')
-
-    for r in range(1, N // 2 + 1):
-        for comb in combinations(range(1, N + 1), r):
+    min_difference = float('inf') #inf = 가장 큰 수
+    #nCr combination 1~4(1,2,3)
+    for r in range(1, N // 2 + 1): #r 선택하는 구역의 개수 = (6C4 == 6C2) 따라서 절반만 계산
+        for comb in combinations(range(1, N + 1), r):#range(1,7) = 1,2,3,4,5,6 즉 -> 6Cr 
+            print("Comb : ",comb)
             A_list = list(comb)
+            print("A_list : ",A_list)
             B_list = [i for i in range(1, N + 1) if i not in A_list]
-
+            #A_list, B_list 검사하기.
             if is_connected(graph, A_list, [0] * (N + 1)) and is_connected(graph, B_list, [0] * (N + 1)):
                 difference = calculate_population([0] + [1 if i in A_list else 2 for i in range(1, N + 1)], population)
                 min_difference = min(min_difference, difference)
