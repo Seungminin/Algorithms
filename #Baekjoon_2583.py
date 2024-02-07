@@ -1,0 +1,53 @@
+#Baekjoon_2583 Solution
+import sys
+sys.setrecursionlimit(10**6) # 재귀의 깊이 변경 (RecursionError)
+input = sys.stdin.readline
+
+dx = [-1, 1, 0, 0]
+dy = [0 , 0, -1, 1]
+count = 0
+
+def DFS(x,y):
+    global count
+    if x<0 or x>=row or y<0 or y>=col:
+        return 0
+    if G[x][y] == 1:
+        return 0
+    
+    G[x][y] = 1
+    count+=1
+
+    for i in range(4):
+        DFS(x+dx[i],y+dy[i])
+
+    return count
+
+if __name__ =='__main__':
+    #가로, 세로, 영역들 입력받기
+    row, col, A = map(int, input().split())
+
+    G = [[0]*(col) for _ in range(row)]
+
+    for _ in range(A):
+        x1, y1, x2, y2 = map(int,input().split())
+        for i in range(y1,y2):
+            for j in range(x1,x2):
+                G[i][j] = 1
+    
+    for i in G:
+        for j in i:
+            print(j, end = ' ')
+        print()
+    
+    res = []
+    for i in range(row):
+        for j in range(col):
+            cnt = DFS(i,j)
+            if cnt:
+                res.append(cnt)
+                count=0
+    
+    res.sort()
+    print(len(res))
+    for i in res:
+        print(i, end = " ")
